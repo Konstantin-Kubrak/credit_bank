@@ -1,0 +1,46 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: calculator
+  profiles:
+    active: prod
+
+logging:
+  level:
+    root: info
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"
+
+
+# credit rates
+credit:
+  # Base credit rate (annual percentage)
+  base-rate:
+    15.0
+  # Rate adjustments
+  rate:
+    adjustment:
+      insurance: -3.0
+      salary-client: -1.0
+      female: -0.5
+      married: -0.5
+  # Employment status adjustments
+      unemployed: 5.0
+      self-employed: 3.0
+      business-owner: 2.0
+  # Position adjustments
+      top-manager: -2.0
+      owner: -2.0
+  # Work experience adjustment
+      low-experience: 1.0
+  # Minimum allowed rate
+    minimum: 5.0
+  # Insurance cost (5% of loan amount with minimum 10,000)
+  insurance:
+    cost:
+      percentage: 5.0
+      minimum: 10000
+  minimum:
+    work-experience-month: 12
