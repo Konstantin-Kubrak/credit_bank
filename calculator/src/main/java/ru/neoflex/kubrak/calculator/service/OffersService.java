@@ -10,10 +10,10 @@ import ru.neoflex.kubrak.calculator.dto.PaymentScheduleElementDto;
 import ru.neoflex.kubrak.calculator.dto.ScoringDataDto;
 import ru.neoflex.kubrak.calculator.exception.InvalidCreditAmountException;
 import ru.neoflex.kubrak.calculator.exception.InvalidEmploymentStatusOrPositionException;
+import ru.neoflex.kubrak.calculator.model.enums.EmploymentPosition;
 import ru.neoflex.kubrak.calculator.model.enums.EmploymentStatus;
 import ru.neoflex.kubrak.calculator.model.enums.Gender;
 import ru.neoflex.kubrak.calculator.model.enums.MaritalStatus;
-import ru.neoflex.kubrak.calculator.model.enums.Position;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -137,12 +137,12 @@ public class OffersService {
         };
         log.debug("After employment status adjustment (+{}): {}", employment.getEmploymentStatus(), rate);
 
-        rate = switch (employment.getPosition()) {
+        rate = switch (employment.getEmploymentPosition()) {
             case TOP_MANAGER -> rate.add(topManagerRateAdjustment);
             case OWNER -> rate.add(ownerRateAdjustment);
             default -> rate;
         };
-        log.debug("After employment position adjustment (+{}): {}", employment.getPosition(), rate);
+        log.debug("After employment position adjustment (+{}): {}", employment.getEmploymentPosition(), rate);
 
         if (employment.getWorkExperienceTotal() < LOW_EXPERIENCE_ENDS_AT) {
             rate = rate.add(lowExperienceRateAdjustment);
@@ -233,24 +233,24 @@ public class OffersService {
 
         EmploymentDto employment = scoringDataDto.getEmployment();
         EmploymentStatus status = employment.getEmploymentStatus();
-        Position position = employment.getPosition();
+        EmploymentPosition employmentPosition = employment.getEmploymentPosition();
 
         if (status == EmploymentStatus.UNEMPLOYED) {
             throw new InvalidEmploymentStatusOrPositionException("Invalid employment status: " + status);
         }
 
         if (status == EmploymentStatus.SELF_EMPLOYED &&
-                (position == Position.TOP_MANAGER || position == Position.WORKER)) {
-            throw new InvalidEmploymentStatusOrPositionException("Self-employed cannot have TOP_MANAGER or WORKER position.");
+                (employmentPosition == EmploymentPosition.TOP_MANAGER || employmentPosition == EmploymentPosition.WORKER)) {
+            throw new InvalidEmploymentStatusOrPositionException("Self-employed cannot have TOP_MANAGER or WORKER employmentPosition.");
         }
-        if (status == EmploymentStatus.BUSINESS_OWNER && position != Position.OWNER) {
-            throw new InvalidEmploymentStatusOrPositionException("Business owner must have OWNER position.");
+        if (status == EmploymentStatus.BUSINESS_OWNER && employmentPosition != EmploymentPosition.OWNER) {
+            throw new InvalidEmploymentStatusOrPositionException("Business owner must have OWNER employmentPosition.");
         }
 
         if(scoringDataDto.getAmount().compareTo(employment.getSalary().multiply(MONTH_AMOUNT_IN_2_YEARS)) > 0) {
             throw new InvalidCreditAmountException("Credit amount exceeds amount of salary per 2 years");
         }
 
-        log.info("Validation passed for employment status: {} and position: {}", status, position);
+        log.info("Validation passed for employment status: {} and employmentPosition: {}", status, employmentPosition);
     }
 }

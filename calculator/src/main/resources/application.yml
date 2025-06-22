@@ -30,7 +30,7 @@ credit:
       unemployed: 5.0
       self-employed: 3.0
       business-owner: 2.0
-  # Position adjustments
+  # EmploymentPosition adjustments
       top-manager: -2.0
       owner: -2.0
   # Work experience adjustment

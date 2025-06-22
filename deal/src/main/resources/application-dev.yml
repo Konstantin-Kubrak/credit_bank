@@ -1,0 +1,3 @@
+logging:
+  level:
+    ru.neoflex.kubrak.deal.service: debug

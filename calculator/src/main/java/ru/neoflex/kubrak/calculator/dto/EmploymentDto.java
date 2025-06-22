@@ -3,8 +3,8 @@ package ru.neoflex.kubrak.calculator.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import ru.neoflex.kubrak.calculator.model.enums.EmploymentPosition;
 import ru.neoflex.kubrak.calculator.model.enums.EmploymentStatus;
-import ru.neoflex.kubrak.calculator.model.enums.Position;
 
 import java.math.BigDecimal;
 
@@ -25,7 +25,7 @@ public class EmploymentDto {
     private BigDecimal salary;
 
     @NotNull(message = "Job position cannot be null")
-    private Position position;
+    private EmploymentPosition employmentPosition;
 
     @NotNull(message = "Total work experience cannot be null")
     @Min(value = 18, message = "Total work experience must be at least 18 month")

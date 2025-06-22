@@ -15,8 +15,8 @@ import ru.neoflex.kubrak.calculator.dto.CreditDto;
 import ru.neoflex.kubrak.calculator.dto.LoanOfferDto;
 import ru.neoflex.kubrak.calculator.dto.LoanStatementRequestDto;
 import ru.neoflex.kubrak.calculator.dto.ScoringDataDto;
+import ru.neoflex.kubrak.calculator.model.enums.EmploymentPosition;
 import ru.neoflex.kubrak.calculator.model.enums.EmploymentStatus;
-import ru.neoflex.kubrak.calculator.model.enums.Position;
 import ru.neoflex.kubrak.calculator.service.CalcService;
 import ru.neoflex.kubrak.calculator.service.OffersService;
 import ru.neoflex.kubrak.calculator.util.PrepareTestDto;
@@ -124,7 +124,7 @@ class CalculatorControllerTest {
         ScoringDataDto invalidData = PrepareTestDto.createValidScoringDataDto();
         invalidData.getEmployment()
                 .setEmploymentStatus(EmploymentStatus.BUSINESS_OWNER)
-                .setPosition(Position.MANAGER);
+                .setEmploymentPosition(EmploymentPosition.MANAGER);
 
         mockMvc.perform(post("/calculator/calc")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -138,7 +138,7 @@ class CalculatorControllerTest {
         ScoringDataDto invalidData = PrepareTestDto.createValidScoringDataDto();
         invalidData.getEmployment()
                 .setEmploymentStatus(EmploymentStatus.UNEMPLOYED)
-                .setPosition(Position.UNEMPLOYED);
+                .setEmploymentPosition(EmploymentPosition.UNEMPLOYED);
 
         mockMvc.perform(post("/calculator/calc")
                         .contentType(MediaType.APPLICATION_JSON)

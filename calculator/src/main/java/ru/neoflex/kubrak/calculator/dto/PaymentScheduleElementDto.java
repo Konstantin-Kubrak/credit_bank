@@ -14,5 +14,4 @@ public class PaymentScheduleElementDto {
     private BigDecimal interestPayment;
     private BigDecimal debtPayment;
     private BigDecimal remainingDebt;
-
 }

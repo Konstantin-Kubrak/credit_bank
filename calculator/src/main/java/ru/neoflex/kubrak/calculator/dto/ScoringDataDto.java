@@ -77,5 +77,4 @@ public class ScoringDataDto {
 
     @NotNull(message = "Salary client status must be specified")
     private Boolean isSalaryClient;
-
 }

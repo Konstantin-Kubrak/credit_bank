@@ -75,8 +75,8 @@ class CalcServiceTest {
 
         LoanOfferDto offer = calcService.createOffer(request, true, false);
 
-        assertEquals(BigDecimal.valueOf(12.0), offer.getRate()); // 15 - 3
-        assertTrue(offer.getTotalAmount().compareTo(request.getAmount()) > 0); // с учетом страховки
+        assertEquals(BigDecimal.valueOf(12.0), offer.getRate());
+        assertTrue(offer.getTotalAmount().compareTo(request.getAmount()) > 0);
     }
 
     @Test
@@ -84,7 +84,7 @@ class CalcServiceTest {
 
         LoanOfferDto offer = calcService.createOffer(request, false, true);
 
-        assertEquals(BigDecimal.valueOf(14.0), offer.getRate()); // 15 - 1
+        assertEquals(BigDecimal.valueOf(14.0), offer.getRate());
     }
 
     @Test
@@ -92,7 +92,7 @@ class CalcServiceTest {
 
         LoanOfferDto offer = calcService.createOffer(request, true, true);
 
-        assertEquals(BigDecimal.valueOf(11.0), offer.getRate()); // 15 - 3 - 1
+        assertEquals(BigDecimal.valueOf(11.0), offer.getRate());
     }
 
     @Test
@@ -101,7 +101,7 @@ class CalcServiceTest {
         ReflectionTestUtils.setField(calcService, "insuranceRateAdjustment", BigDecimal.valueOf(-20.0));
         LoanOfferDto offer = calcService.createOffer(request, true, false);
 
-        assertEquals(BigDecimal.valueOf(5.0), offer.getRate()); // минимум
+        assertEquals(BigDecimal.valueOf(5.0), offer.getRate());
     }
 
 }

@@ -39,7 +39,7 @@ public class CalculatorController {
     @ApiResponse(responseCode = "200", description = "Successful operation",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = LoanOfferDto.class)))
-    public List<LoanOfferDto> offers(@Valid @RequestBody LoanStatementRequestDto lsrDto){
+    public List<LoanOfferDto> offers(@Valid @RequestBody LoanStatementRequestDto lsrDto) {
 
         log.info("Received loan statement request: {}", lsrDto);
         List<LoanOfferDto> listOfLoanOfferDto = calculatorService.calculateLoanOffers(lsrDto);
@@ -54,7 +54,7 @@ public class CalculatorController {
     @ApiResponse(responseCode = "200", description = "Successful operation",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = CreditDto.class)))
-    public ResponseEntity<?> calc(@Valid @RequestBody ScoringDataDto scoringDataDto){
+    public ResponseEntity<?> calc(@Valid @RequestBody ScoringDataDto scoringDataDto) {
 
         log.info("Received scoring data: {}", scoringDataDto);
         try {
@@ -67,4 +67,5 @@ public class CalculatorController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 }

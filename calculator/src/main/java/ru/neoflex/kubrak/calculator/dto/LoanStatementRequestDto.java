@@ -54,5 +54,4 @@ public class LoanStatementRequestDto {
     @NotNull(message = "Passport number cannot be null")
     @Pattern(regexp = "^[0-9]{6}$", message = "Passport number must be 6 digits")
     private String passportNumber;
-
 }

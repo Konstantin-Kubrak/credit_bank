@@ -17,10 +17,10 @@ import ru.neoflex.kubrak.calculator.dto.PaymentScheduleElementDto;
 import ru.neoflex.kubrak.calculator.dto.ScoringDataDto;
 import ru.neoflex.kubrak.calculator.exception.InvalidCreditAmountException;
 import ru.neoflex.kubrak.calculator.exception.InvalidEmploymentStatusOrPositionException;
+import ru.neoflex.kubrak.calculator.model.enums.EmploymentPosition;
 import ru.neoflex.kubrak.calculator.model.enums.EmploymentStatus;
 import ru.neoflex.kubrak.calculator.model.enums.Gender;
 import ru.neoflex.kubrak.calculator.model.enums.MaritalStatus;
-import ru.neoflex.kubrak.calculator.model.enums.Position;
 import ru.neoflex.kubrak.calculator.util.PrepareTestDto;
 
 import java.math.BigDecimal;
@@ -60,7 +60,7 @@ class OffersServiceTest {
             InvalidEmploymentStatusOrPositionException, InvalidCreditAmountException {
 
         scoringData.setIsSalaryClient(true);
-        scoringData.getEmployment().setPosition(Position.TOP_MANAGER);
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.TOP_MANAGER);
         CreditDto result = offersService.calculateCredit(scoringData);
 
         assertNotNull(result);
@@ -88,7 +88,7 @@ class OffersServiceTest {
             Gender gender,
             MaritalStatus maritalStatus,
             EmploymentStatus employmentStatus,
-            Position position,
+            EmploymentPosition employmentPosition,
             int workExperience,
             BigDecimal expectedAdjustment) {
 
@@ -97,7 +97,7 @@ class OffersServiceTest {
         scoringData.setGender(gender);
         scoringData.setMaritalStatus(maritalStatus);
         scoringData.getEmployment().setEmploymentStatus(employmentStatus);
-        scoringData.getEmployment().setPosition(position);
+        scoringData.getEmployment().setEmploymentPosition(employmentPosition);
         scoringData.getEmployment().setWorkExperienceTotal(workExperience);
 
         BigDecimal result = offersService.calculateFinalRate(scoringData);
@@ -116,7 +116,7 @@ class OffersServiceTest {
                 .setMaritalStatus(MaritalStatus.MARRIED);
         scoringData.getEmployment()
                 .setEmploymentStatus(EmploymentStatus.EMPLOYED)
-                .setPosition(Position.TOP_MANAGER)
+                .setEmploymentPosition(EmploymentPosition.TOP_MANAGER)
                 .setWorkExperienceTotal(24);
 
         BigDecimal result = offersService.calculateFinalRate(scoringData);
@@ -165,7 +165,7 @@ class OffersServiceTest {
     @DisplayName("scoringDataValidation_should throw for business owner with non-owner position")
     void scoringDataValidation_shouldThrowForBusinessOwnerWithNonOwnerPosition() {
         scoringData.getEmployment().setEmploymentStatus(EmploymentStatus.BUSINESS_OWNER);
-        scoringData.getEmployment().setPosition(Position.MANAGER); // Не OWNER
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.MANAGER); // Не OWNER
 
         assertThrows(InvalidEmploymentStatusOrPositionException.class,
                 () -> offersService.scoringDataValidation(scoringData));
@@ -175,7 +175,7 @@ class OffersServiceTest {
     @DisplayName("scoringDataValidation_pass business owner with owner position")
     void scoringDataValidation_shouldPassForBusinessOwnerWithOwnerPosition() {
         scoringData.getEmployment().setEmploymentStatus(EmploymentStatus.BUSINESS_OWNER);
-        scoringData.getEmployment().setPosition(Position.OWNER);
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.OWNER);
 
         assertDoesNotThrow(() -> offersService.scoringDataValidation(scoringData));
     }
@@ -185,11 +185,11 @@ class OffersServiceTest {
     void scoringDataValidation_shouldThrowForSelfEmployedWithInvalidPositions() {
         scoringData.getEmployment().setEmploymentStatus(EmploymentStatus.SELF_EMPLOYED);
 
-        scoringData.getEmployment().setPosition(Position.TOP_MANAGER);
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.TOP_MANAGER);
         assertThrows(InvalidEmploymentStatusOrPositionException.class,
                 () -> offersService.scoringDataValidation(scoringData));
 
-        scoringData.getEmployment().setPosition(Position.WORKER);
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.WORKER);
         assertThrows(InvalidEmploymentStatusOrPositionException.class,
                 () -> offersService.scoringDataValidation(scoringData));
     }
@@ -198,7 +198,7 @@ class OffersServiceTest {
     void scoringDataValidation_shouldThrowForUnemployed() {
         scoringData.getEmployment()
                 .setEmploymentStatus(EmploymentStatus.UNEMPLOYED)
-                .setPosition(Position.UNEMPLOYED);
+                .setEmploymentPosition(EmploymentPosition.UNEMPLOYED);
 
         assertThrows(InvalidEmploymentStatusOrPositionException.class,
                 () -> offersService.scoringDataValidation(scoringData));
@@ -218,10 +218,10 @@ class OffersServiceTest {
     void scoringDataValidation_shouldPassForSelfEmployedWithValidPositions() {
         scoringData.getEmployment().setEmploymentStatus(EmploymentStatus.SELF_EMPLOYED);
 
-        scoringData.getEmployment().setPosition(Position.MANAGER);
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.MANAGER);
         assertDoesNotThrow(() -> offersService.scoringDataValidation(scoringData));
 
-        scoringData.getEmployment().setPosition(Position.OWNER);
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.OWNER);
         assertDoesNotThrow(() -> offersService.scoringDataValidation(scoringData));
     }
 
@@ -230,7 +230,7 @@ class OffersServiceTest {
     void scoringDataValidation_shouldThrowForUnemployedWithWrongPosition() {
 
         scoringData.getEmployment().setEmploymentStatus(EmploymentStatus.UNEMPLOYED);
-        scoringData.getEmployment().setPosition(Position.MANAGER);
+        scoringData.getEmployment().setEmploymentPosition(EmploymentPosition.MANAGER);
 
         assertThrows(InvalidEmploymentStatusOrPositionException.class,
                 () -> offersService.scoringDataValidation(scoringData));
@@ -238,24 +238,24 @@ class OffersServiceTest {
 
     private static Stream<Arguments> rateAdjustmentProvider() {
         return Stream.of(
-                Arguments.of(true, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, Position.MANAGER, 24,
-                        BigDecimal.valueOf(-3.0)), // только insurance enabled
-                Arguments.of(false, true, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, Position.MANAGER, 24,
-                        BigDecimal.valueOf(-1.0)),  // только salary client enabled
-                Arguments.of(false, false, Gender.FEMALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, Position.MANAGER, 24,
-                        BigDecimal.valueOf(-0.5)), // только female
-                Arguments.of(false, false, Gender.MALE, MaritalStatus.MARRIED, EmploymentStatus.EMPLOYED, Position.MANAGER, 24,
-                        BigDecimal.valueOf(-0.5)), // только married
-                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.SELF_EMPLOYED, Position.MANAGER, 24,
-                        BigDecimal.valueOf(3.0)), // только self-employed
-                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.BUSINESS_OWNER, Position.MANAGER, 24,
-                        BigDecimal.valueOf(2.0)), // только business owner
-                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, Position.TOP_MANAGER, 24,
-                        BigDecimal.valueOf(-2.0)), // только top manager
-                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, Position.OWNER, 24,
-                        BigDecimal.valueOf(-2.0)), // только owner
-                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, Position.MANAGER, 6,
-                        BigDecimal.valueOf(1.0))  // только low experience
+                Arguments.of(true, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, EmploymentPosition.MANAGER, 24,
+                        BigDecimal.valueOf(-3.0)),
+                Arguments.of(false, true, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, EmploymentPosition.MANAGER, 24,
+                        BigDecimal.valueOf(-1.0)),
+                Arguments.of(false, false, Gender.FEMALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, EmploymentPosition.MANAGER, 24,
+                        BigDecimal.valueOf(-0.5)),
+                Arguments.of(false, false, Gender.MALE, MaritalStatus.MARRIED, EmploymentStatus.EMPLOYED, EmploymentPosition.MANAGER, 24,
+                        BigDecimal.valueOf(-0.5)),
+                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.SELF_EMPLOYED, EmploymentPosition.MANAGER, 24,
+                        BigDecimal.valueOf(3.0)),
+                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.BUSINESS_OWNER, EmploymentPosition.MANAGER, 24,
+                        BigDecimal.valueOf(2.0)),
+                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, EmploymentPosition.TOP_MANAGER, 24,
+                        BigDecimal.valueOf(-2.0)),
+                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, EmploymentPosition.OWNER, 24,
+                        BigDecimal.valueOf(-2.0)),
+                Arguments.of(false, false, Gender.MALE, MaritalStatus.SINGLE, EmploymentStatus.EMPLOYED, EmploymentPosition.MANAGER, 6,
+                        BigDecimal.valueOf(1.0))
 
         );
     }
