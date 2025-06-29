@@ -9,7 +9,6 @@ import ru.neoflex.kubrak.deal.dto.dtoMapper.EmploymentMapper;
 import ru.neoflex.kubrak.deal.model.entity.Client;
 import ru.neoflex.kubrak.deal.model.jsonb.Employment;
 import ru.neoflex.kubrak.deal.model.jsonb.Passport;
-import ru.neoflex.kubrak.deal.repository.ClientRepository;
 
 import java.util.UUID;
 
@@ -18,15 +17,7 @@ import java.util.UUID;
 @Service
 public class ClientService {
 
-    private final ClientRepository clientRepository;
     private final EmploymentMapper employmentMapper;
-
-    public void saveClient(Client client) {
-
-        log.info("Saving client with email: {}", client.getEmail());
-        clientRepository.save(client);
-        log.debug("Client saved successfully. ID: {}", client.getClientId());
-    }
 
     public Client createClient(LoanStatementRequestDto lsrDto) {
 

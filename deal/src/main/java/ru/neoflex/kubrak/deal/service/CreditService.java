@@ -2,10 +2,9 @@ package ru.neoflex.kubrak.deal.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestClient;
+import ru.neoflex.kubrak.deal.client.CalculatorClientService;
 import ru.neoflex.kubrak.deal.dto.CreditDto;
 import ru.neoflex.kubrak.deal.dto.EmploymentDto;
 import ru.neoflex.kubrak.deal.dto.FinishRegistrationRequestDto;
@@ -35,10 +34,7 @@ public class CreditService {
     private final EmploymentMapper employmentMapper;
     private final CreditMapper creditMapper;
     private final CreditRepository creditRepository;
-    private final RestClient restClient;
-
-    @Value("${calculator.service.calc-credit-url}")
-    private String calcCreditUrl;
+    private final CalculatorClientService calculatorClientService;
 
 
     @Transactional
@@ -57,12 +53,12 @@ public class CreditService {
         ScoringDataDto scoringData = createScoringDataDto(statement);
         log.debug("Scoring data prepared: {}", scoringData);
 
-        CreditDto creditDto = getCreditFromCalcService(scoringData);
+        CreditDto creditDto = calculatorClientService.getCredit(scoringData);
         log.debug("Received credit calculation: {}", creditDto);
 
         Credit credit = creditMapper.toEntity(creditDto);
         credit.setCreditStatus(CreditStatus.CALCULATED);
-        saveCredit(credit);
+        creditRepository.save(credit);
         log.debug("Credit entity created: {}", credit.getCreditId());
 
         statement.setCredit(credit);
@@ -95,26 +91,5 @@ public class CreditService {
                 .setAccountNumber(client.getAccountNumber())
                 .setIsInsuranceEnabled(credit.getInsuranceEnabled())
                 .setIsSalaryClient(credit.getSalaryClient());
-    }
-
-    public CreditDto getCreditFromCalcService(ScoringDataDto scoringData) throws CreditRequestFailedException {
-
-        log.info("Sending request to calculator service with scoring data");
-        CreditDto creditDto = restClient.post()
-                .uri(calcCreditUrl)
-                .body(scoringData)
-                .retrieve()
-                .body(CreditDto.class);
-        log.debug("Received response from calculator service");
-        if (creditDto == null) {
-            log.error("Failed to get credit calculation for scoringData: {}", scoringData);
-            throw new CreditRequestFailedException("Credit calculation failed, received NULL from ms calculator");
-        } else return creditDto;
-    }
-
-
-    public void saveCredit(Credit credit) {
-
-        creditRepository.save(credit);
     }
 }

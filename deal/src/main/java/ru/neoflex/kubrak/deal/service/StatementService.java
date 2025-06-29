@@ -82,11 +82,7 @@ public class StatementService {
         StatusHistory statusHistory = createStatusHistory(applicationStatus, changeType);
         statement.addStatusHistory(statusHistory);
 
-        saveStatement(statement);
-    }
-
-    public void saveStatement(Statement statement) {
-
         statementRepository.save(statement);
     }
+
 }

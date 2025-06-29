@@ -2,16 +2,14 @@ package ru.neoflex.kubrak.deal.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
+import ru.neoflex.kubrak.deal.client.CalculatorClientService;
 import ru.neoflex.kubrak.deal.dto.LoanOfferDto;
 import ru.neoflex.kubrak.deal.dto.LoanStatementRequestDto;
-import ru.neoflex.kubrak.deal.exception.CalculatorServiceException;
 import ru.neoflex.kubrak.deal.model.entity.Client;
 import ru.neoflex.kubrak.deal.model.entity.Statement;
+import ru.neoflex.kubrak.deal.repository.ClientRepository;
+import ru.neoflex.kubrak.deal.repository.StatementRepository;
 
 import java.util.List;
 
@@ -20,10 +18,11 @@ import java.util.List;
 @Service
 public class OfferService {
 
+    private final ClientRepository clientRepository;
     private final ClientService clientService;
     private final StatementService statementService;
-
-    private final RestClient restClient;
+    private final StatementRepository statementRepository;
+    private final CalculatorClientService calculatorClientService;
 
     public List<LoanOfferDto> getLoanOfferList(LoanStatementRequestDto loanStatementRequestDto) {
 
@@ -31,14 +30,14 @@ public class OfferService {
         Client client = clientService.createClient(loanStatementRequestDto);
         log.debug("Client created: {}", client);
 
-        clientService.saveClient(client);
+        clientRepository.save(client);
         log.debug("Client saved to DB");
 
         Statement statement = statementService.createStatement(client);
-        statementService.saveStatement(statement);
+        statementRepository.save(statement);
         log.debug("Statement created and saved: {}", statement);
 
-        List<LoanOfferDto> loanOfferDtoList = getOffersFromCalculator(loanStatementRequestDto);
+        List<LoanOfferDto> loanOfferDtoList = calculatorClientService.getOffers(loanStatementRequestDto);
         log.debug("Received {} offers from calculator: {}", loanOfferDtoList.size(), loanOfferDtoList);
         for(LoanOfferDto loanOfferDto : loanOfferDtoList){
             loanOfferDto.setStatementId(statement.getStatementId());
@@ -46,24 +45,5 @@ public class OfferService {
         log.info("Successfully processed loan offers request. Generated {} offers", loanOfferDtoList.size());
 
         return loanOfferDtoList;
-    }
-
-    public List<LoanOfferDto> getOffersFromCalculator(LoanStatementRequestDto requestDto)  {
-
-        log.info("Getting loan offers from MS calculator.");
-        log.debug("LoanStatementRequestDto: {}", requestDto);
-        try {
-            return restClient.post()
-                    .uri("/calculator/offers")
-                    .body(requestDto)
-                    .retrieve()
-                    .onStatus(HttpStatusCode::isError, (request, response) -> {
-                        throw new CalculatorServiceException("Calculator service returned error: "
-                                + response.getStatusCode() + "\n, returned message: " + response);
-                    })
-                    .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {});
-        } catch (RestClientException e) {
-            throw new CalculatorServiceException("Failed to call calculator service: " + e.getMessage());
-        }
     }
 }

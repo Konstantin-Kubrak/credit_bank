@@ -9,5 +9,4 @@ class DealApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }

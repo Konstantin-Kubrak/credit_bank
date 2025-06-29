@@ -49,8 +49,6 @@ class CreditControllerTest {
     @Test
     void calculate_ShouldReturnCreatedWhenSuccess() throws Exception {
 
-        doNothing().when(creditService).finishCreditRegistration(statementId, frrDto);
-
         mockMvc.perform(post("/deal/calculate/{statementId}", statementId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(frrDto)))
@@ -94,6 +92,7 @@ class CreditControllerTest {
 
     @Test
     void calculate_ShouldValidateRequest() throws Exception {
+
         FinishRegistrationRequestDto invalidDto = new FinishRegistrationRequestDto();
 
         mockMvc.perform(post("/deal/calculate/{statementId}", UUID.randomUUID())

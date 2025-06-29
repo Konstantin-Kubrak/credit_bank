@@ -1,4 +1,4 @@
-package ru.neoflex.kubrak.deal.config;
+package ru.neoflex.kubrak.deal.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

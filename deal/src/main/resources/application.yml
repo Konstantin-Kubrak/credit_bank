@@ -17,6 +17,7 @@ calculator:
   service:
     base-url: http://calculator
     calc-credit-url: /calculator/calc
+    calc-offers-url: /calculator/offers
 
 logging:
   level:

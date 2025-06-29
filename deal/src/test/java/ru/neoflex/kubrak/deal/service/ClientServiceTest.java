@@ -16,7 +16,6 @@ import ru.neoflex.kubrak.deal.model.enums.Gender;
 import ru.neoflex.kubrak.deal.model.enums.MaritalStatus;
 import ru.neoflex.kubrak.deal.model.jsonb.Employment;
 import ru.neoflex.kubrak.deal.model.jsonb.Passport;
-import ru.neoflex.kubrak.deal.repository.ClientRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -30,25 +29,10 @@ import static org.mockito.Mockito.*;
 class ClientServiceTest {
 
     @Mock
-    private ClientRepository clientRepository;
-
-    @Mock
     private EmploymentMapper employmentMapper;
 
     @InjectMocks
     private ClientService clientService;
-
-    @Test
-    void saveClient_ShouldCallRepositorySave() {
-
-        Client client = new Client();
-        client.setClientId(UUID.randomUUID());
-        client.setEmail("test@example.com");
-
-        clientService.saveClient(client);
-
-        verify(clientRepository, times(1)).save(client);
-    }
 
     @Test
     void createClient_ShouldCreateClientFromLoanStatementRequest() {

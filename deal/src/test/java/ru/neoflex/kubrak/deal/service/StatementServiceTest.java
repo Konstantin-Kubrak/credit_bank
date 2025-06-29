@@ -151,12 +151,4 @@ class StatementServiceTest {
         assertThrows(StatementNotFoundException.class, () ->
                 statementService.getStatement(statementId));
     }
-
-    @Test
-    void saveStatement_ShouldCallRepository() {
-
-        Statement statement = Statement.builder().build();
-        statementService.saveStatement(statement);
-        verify(statementRepository).save(statement);
-    }
 }
