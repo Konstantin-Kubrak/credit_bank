@@ -9,7 +9,6 @@ import ru.neoflex.kubrak.deal.model.enums.Gender;
 import ru.neoflex.kubrak.deal.model.enums.MaritalStatus;
 import ru.neoflex.kubrak.deal.model.jsonb.Employment;
 import ru.neoflex.kubrak.deal.model.jsonb.Passport;
-import ru.neoflex.kubrak.deal.model.jsonb.PaymentScheduleElement;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -41,7 +40,8 @@ public class EntityFactory {
         );
     }
 
-    public static LoanStatementRequestDto createLoanRequest() {
+    public static LoanStatementRequestDto createTestLoanRequest() {
+
         return new LoanStatementRequestDto()
                 .setAmount(BigDecimal.valueOf(100000))
                 .setTerm(12)
@@ -68,7 +68,7 @@ public class EntityFactory {
 
     public static Statement createTestStatement(UUID statementId) {
 
-        Client client = createClient();
+        Client client = createTestClient();
         Credit credit = createTestCredit();
 
         return Statement.builder()
@@ -79,7 +79,7 @@ public class EntityFactory {
                 .build();
     }
 
-    public static Client createClient() {
+    public static Client createTestClient() {
 
         return Client.builder()
                 .clientId(UUID.randomUUID())
@@ -124,19 +124,6 @@ public class EntityFactory {
         paymentElement.setRemainingDebt(BigDecimal.valueOf(92000));
 
         return paymentElement;
-    }
-
-    public static PaymentScheduleElement createPaymentScheduleElement() {
-
-        return PaymentScheduleElement
-                .builder()
-                .number(1)
-                .date(LocalDate.now().plusMonths(1))
-                .totalPayment(BigDecimal.valueOf(10000))
-                .interestPayment(BigDecimal.valueOf(2000))
-                .debtPayment(BigDecimal.valueOf(8000))
-                .remainingDebt(BigDecimal.valueOf(92000))
-                .build();
     }
 
     public static Credit createTestCredit() {

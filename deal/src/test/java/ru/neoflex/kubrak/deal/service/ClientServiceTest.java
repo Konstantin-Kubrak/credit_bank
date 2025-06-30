@@ -83,7 +83,7 @@ class ClientServiceTest {
 
         EmploymentDto employmentDto = new EmploymentDto()
                 .setEmploymentStatus(EmploymentStatus.EMPLOYED)
-                .setEmployerINN("1234567890")
+                .setEmployerInn("1234567890")
                 .setSalary(BigDecimal.valueOf(100000))
                 .setEmploymentPosition(EmploymentPosition.MANAGER)
                 .setWorkExperienceTotal(60)

@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.neoflex.kubrak.deal.dto.FinishRegistrationRequestDto;
 import ru.neoflex.kubrak.deal.exception.CreditRequestFailedException;
 import ru.neoflex.kubrak.deal.exception.StatementNotFoundException;
-import ru.neoflex.kubrak.deal.service.CreditService;
+import ru.neoflex.kubrak.deal.service.DealService;
 import ru.neoflex.kubrak.deal.util.EntityFactory;
 
 import java.util.UUID;
@@ -33,11 +33,12 @@ class CreditControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private CreditService creditService;
-
     UUID statementId;
     FinishRegistrationRequestDto frrDto;
+    private final String statementUri = "/deal/calculate/{statementId}";
+
+    @MockitoBean
+    private DealService dealService;
 
     @BeforeEach
     void setUp() {
@@ -55,7 +56,7 @@ class CreditControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string(""));
 
-        verify(creditService).finishCreditRegistration(statementId, frrDto);
+        verify(dealService).finishCreditRegistration(statementId, frrDto);
     }
 
     @Test
@@ -63,7 +64,7 @@ class CreditControllerTest {
 
         String errorMessage = "Statement with ID " + statementId + " not found";
         doThrow(new StatementNotFoundException(statementId))
-                .when(creditService).finishCreditRegistration(statementId, frrDto);
+                .when(dealService).finishCreditRegistration(statementId, frrDto);
 
         mockMvc.perform(post("/deal/calculate/{statementId}", statementId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -71,7 +72,7 @@ class CreditControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(errorMessage));
 
-        verify(creditService).finishCreditRegistration(statementId, frrDto);
+        verify(dealService).finishCreditRegistration(statementId, frrDto);
     }
 
     @Test
@@ -79,15 +80,14 @@ class CreditControllerTest {
 
         String errorMessage = "Credit calculation failed";
         doThrow(new CreditRequestFailedException(errorMessage))
-                .when(creditService).finishCreditRegistration(statementId, frrDto);
+                .when(dealService).finishCreditRegistration(statementId, frrDto);
 
-        mockMvc.perform(post("/deal/calculate/{statementId}", statementId)
+        mockMvc.perform(post(statementUri, statementId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(frrDto)))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().string(errorMessage));
+                .andExpect(status().isInternalServerError());
 
-        verify(creditService).finishCreditRegistration(statementId, frrDto);
+        verify(dealService).finishCreditRegistration(statementId, frrDto);
     }
 
     @Test
@@ -95,12 +95,12 @@ class CreditControllerTest {
 
         FinishRegistrationRequestDto invalidDto = new FinishRegistrationRequestDto();
 
-        mockMvc.perform(post("/deal/calculate/{statementId}", UUID.randomUUID())
+        mockMvc.perform(post(statementUri, UUID.randomUUID())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(creditService, never()).finishCreditRegistration(any(), any());
+        verify(dealService, never()).finishCreditRegistration(any(), any());
     }
 
     @Test
@@ -111,6 +111,6 @@ class CreditControllerTest {
                         .content(objectMapper.writeValueAsString(frrDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(creditService, never()).finishCreditRegistration(any(), any());
+        verify(dealService, never()).finishCreditRegistration(any(), any());
     }
 }

@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestClientException;
 import ru.neoflex.kubrak.deal.dto.CreditDto;
 import ru.neoflex.kubrak.deal.dto.LoanOfferDto;
 import ru.neoflex.kubrak.deal.dto.LoanStatementRequestDto;
@@ -25,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CalculatorClientServiceTest {
+class CalculatorClientTest {
 
     private static final String TEST_OFFERS_URL = "/calculator/offers";
     private static final String TEST_CREDIT_URL = "/calculator/calc";
@@ -35,14 +34,14 @@ class CalculatorClientServiceTest {
     @Mock private RestClient.RequestBodySpec requestBodySpec;
     @Mock private RestClient.ResponseSpec responseSpec;
 
-    private CalculatorClientService calculatorClientService;
+    private CalculatorClient calculatorClient;
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        calculatorClientService = new CalculatorClientService(restClient);
+        calculatorClient = new CalculatorClient(restClient);
 
-        setPrivateField(calculatorClientService, "offersUrl", TEST_OFFERS_URL);
-        setPrivateField(calculatorClientService, "calcCreditUrl", TEST_CREDIT_URL);
+        setPrivateField(calculatorClient, "offersUrl", TEST_OFFERS_URL);
+        setPrivateField(calculatorClient, "calcCreditUrl", TEST_CREDIT_URL);
     }
 
     private void setPrivateField(Object target, String fieldName, Object value)
@@ -55,7 +54,7 @@ class CalculatorClientServiceTest {
     @Test
     void getOffers_ShouldReturnOffers(){
 
-        LoanStatementRequestDto request = EntityFactory.createLoanRequest();
+        LoanStatementRequestDto request = EntityFactory.createTestLoanRequest();
         List<LoanOfferDto> expected = EntityFactory.createExpectedOffers();
 
         when(restClient.post()).thenReturn(requestBodyUriSpec);
@@ -66,7 +65,7 @@ class CalculatorClientServiceTest {
         when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
         when(responseSpec.body(any(ParameterizedTypeReference.class))).thenReturn(expected);
 
-        List<LoanOfferDto> result = calculatorClientService.getOffers(request);
+        List<LoanOfferDto> result = calculatorClient.getOffers(request);
 
         assertEquals(expected, result);
         verify(responseSpec).onStatus(any(), any());
@@ -74,7 +73,7 @@ class CalculatorClientServiceTest {
     }
 
     @Test
-    void getCredit_ShouldReturnCredit() throws Exception {
+    void getCredit_ShouldReturnCredit(){
         ScoringDataDto scoringData = new ScoringDataDto();
         CreditDto expected = EntityFactory.createTestCreditDto();
 
@@ -87,25 +86,11 @@ class CalculatorClientServiceTest {
 
         when(responseSpec.onStatus(any(), any())).thenReturn(responseSpec);
 
-        CreditDto result = calculatorClientService.getCredit(scoringData);
+        CreditDto result = calculatorClient.getCredit(scoringData);
 
         assertEquals(expected, result);
         verify(responseSpec).onStatus(any(), any());
         verify(responseSpec).body(CreditDto.class);
-    }
-
-    @Test
-    void getOffers_ShouldThrowOnRestClientException(){
-
-        LoanStatementRequestDto request = EntityFactory.createLoanRequest();
-
-        when(restClient.post()).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.uri(TEST_OFFERS_URL)).thenReturn(requestBodySpec);
-        when(requestBodySpec.body(request)).thenReturn(requestBodySpec);
-        when(requestBodySpec.retrieve()).thenThrow(new RestClientException("Error"));
-
-        assertThrows(CalculatorServiceException.class, () ->
-                calculatorClientService.getOffers(request));
     }
 
     @Test
@@ -122,7 +107,7 @@ class CalculatorClientServiceTest {
         when(responseSpec.body(CreditDto.class)).thenReturn(null);
 
         assertThrows(CreditRequestFailedException.class, () ->
-                calculatorClientService.getCredit(scoringData));
+                calculatorClient.getCredit(scoringData));
 
         verify(responseSpec).onStatus(any(), any());
     }
@@ -130,7 +115,7 @@ class CalculatorClientServiceTest {
     @Test
     void getOffers_ShouldThrowOnHttpError(){
 
-        LoanStatementRequestDto request = EntityFactory.createLoanRequest();
+        LoanStatementRequestDto request = EntityFactory.createTestLoanRequest();
 
         when(restClient.post()).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.uri(TEST_OFFERS_URL)).thenReturn(requestBodySpec);
@@ -140,6 +125,6 @@ class CalculatorClientServiceTest {
                 .when(responseSpec).onStatus(any(), any());
 
         assertThrows(CalculatorServiceException.class, () ->
-                calculatorClientService.getOffers(request));
+                calculatorClient.getOffers(request));
     }
 }

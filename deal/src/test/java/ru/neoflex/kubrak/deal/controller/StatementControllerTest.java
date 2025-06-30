@@ -14,7 +14,7 @@ import ru.neoflex.kubrak.deal.dto.LoanOfferDto;
 import ru.neoflex.kubrak.deal.dto.LoanStatementRequestDto;
 import ru.neoflex.kubrak.deal.exception.CalculatorServiceException;
 import ru.neoflex.kubrak.deal.exception.StatementNotFoundException;
-import ru.neoflex.kubrak.deal.service.OfferService;
+import ru.neoflex.kubrak.deal.service.DealService;
 import ru.neoflex.kubrak.deal.service.StatementService;
 import ru.neoflex.kubrak.deal.util.EntityFactory;
 
@@ -35,13 +35,13 @@ class StatementControllerTest {
     private StatementService statementService;
 
     @Mock
-    private OfferService offerService;
+    private DealService dealService;
 
     @InjectMocks
     private StatementController statementController;
 
-    private String statementUri = "/deal/statement";
-    private String offerSelectUri = "/deal/offer/select";
+    private final String statementUri = "/deal/statement";
+    private final String offerSelectUri = "/deal/offer/select";
 
     @BeforeEach
     void setUp() {
@@ -51,10 +51,10 @@ class StatementControllerTest {
     @Test
     void statement_ShouldReturnLoanOffers() throws Exception {
 
-        LoanStatementRequestDto requestDto = EntityFactory.createLoanRequest();
+        LoanStatementRequestDto requestDto = EntityFactory.createTestLoanRequest();
         List<LoanOfferDto> expectedOffers = EntityFactory.createExpectedOffers();
 
-        when(offerService.getLoanOfferList(requestDto)).thenReturn(expectedOffers);
+        when(dealService.getLoanOfferList(requestDto)).thenReturn(expectedOffers);
 
         mockMvc.perform(post(statementUri)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,16 +65,16 @@ class StatementControllerTest {
                 .andExpect(jsonPath("$[0].requestedAmount").value(100000))
                 .andExpect(jsonPath("$[1].rate").value(8));
 
-        verify(offerService).getLoanOfferList(requestDto);
+        verify(dealService).getLoanOfferList(requestDto);
     }
 
     @Test
     void statement_ShouldReturnServiceUnavailableWhenCalculatorFails() throws Exception {
 
-        LoanStatementRequestDto requestDto = EntityFactory.createLoanRequest();
+        LoanStatementRequestDto requestDto = EntityFactory.createTestLoanRequest();
         String errorMessage = "Calculator service unavailable";
 
-        when(offerService.getLoanOfferList(requestDto))
+        when(dealService.getLoanOfferList(requestDto))
                 .thenThrow(new CalculatorServiceException(errorMessage));
 
         mockMvc.perform(post(statementUri)
@@ -83,7 +83,7 @@ class StatementControllerTest {
                 .andExpect(status().isServiceUnavailable())
                 .andExpect(content().string("Calculator service error: " + errorMessage));
 
-        verify(offerService).getLoanOfferList(requestDto);
+        verify(dealService).getLoanOfferList(requestDto);
     }
 
     @Test
@@ -96,7 +96,7 @@ class StatementControllerTest {
                         .content(objectMapper.writeValueAsString(invalidDto)))
                 .andExpect(status().isBadRequest());
 
-        verifyNoInteractions(offerService);
+        verifyNoInteractions(dealService);
     }
 
     @Test
@@ -132,6 +132,7 @@ class StatementControllerTest {
                 .andExpect(content().string(errorMessage));
 
         verify(statementService).setStatementLoanOffer(offerDto);
+
     }
 
     @Test

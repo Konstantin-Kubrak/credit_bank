@@ -13,10 +13,10 @@ import java.math.BigDecimal;
 @Schema(description = "Employment")
 public class Employment {
 
-    private EmploymentStatus status;
+    private EmploymentStatus employmentStatus;
     private String employerInn;
     private BigDecimal salary;
-    private EmploymentPosition position;
+    private EmploymentPosition employmentPosition;
     private Integer workExperienceTotal;
     private Integer workExperienceCurrent;
 }

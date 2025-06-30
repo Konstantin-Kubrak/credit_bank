@@ -26,12 +26,14 @@ public class StatementService {
     private final LoanOfferMapper loanOfferMapper;
 
     @Transactional
-    public void setStatementLoanOffer(LoanOfferDto loanOfferDto) throws StatementNotFoundException {
+    public void setStatementLoanOffer(LoanOfferDto loanOfferDto){
 
         log.info("Setting loan offer for statement ID: {}", loanOfferDto.getStatementId());
         log.debug("Offer details: {}", loanOfferDto);
 
-        Statement statement = getStatement(loanOfferDto.getStatementId());
+        Statement statement = statementRepository
+                .findById(loanOfferDto.getStatementId())
+                .orElseThrow(()-> new StatementNotFoundException(loanOfferDto.getStatementId()));
         log.debug("Retrieved statement: {}", statement);
 
         statement.setStatus(ApplicationStatus.APPROVED);
@@ -40,17 +42,6 @@ public class StatementService {
         statement.setAppliedOffer(loanOfferMapper.toEntity(loanOfferDto));
         statementRepository.save(statement);
         log.info("Loan offer successfully set for statement ID: {}", statement.getStatementId());
-    }
-
-    public Statement getStatement(UUID statementId) throws StatementNotFoundException {
-
-        log.debug("Fetching statement with ID: {}", statementId);
-        return statementRepository
-                .findById(statementId)
-                .orElseThrow(()-> {
-                    log.error("Statement not found with id: {}", statementId);
-                    return new StatementNotFoundException(statementId);
-                });
     }
 
     public Statement createStatement(Client client) {

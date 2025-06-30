@@ -1,6 +1,5 @@
 package ru.neoflex.kubrak.deal.service;
 
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -128,27 +127,15 @@ class StatementServiceTest {
     }
 
     @Test
-    void getStatement_ShouldReturnStatementWhenExists() throws StatementNotFoundException {
+    void setStatementLoanOffer_ShouldThrowWhenStatementNotFound() {
 
-        UUID statementId = UUID.randomUUID();
-        Statement expected = Statement.builder()
-                .statementId(statementId)
-                .build();
+        UUID invalidId = UUID.randomUUID();
+        LoanOfferDto invalidOffer = new LoanOfferDto().setStatementId(invalidId);
 
-        when(statementRepository.findById(statementId)).thenReturn(Optional.of(expected));
-
-        Statement result = statementService.getStatement(statementId);
-
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void getStatement_ShouldThrowWhenNotFound() {
-
-        UUID statementId = UUID.randomUUID();
-        when(statementRepository.findById(statementId)).thenReturn(Optional.empty());
+        when(statementRepository.findById(invalidId))
+                .thenReturn(Optional.empty());
 
         assertThrows(StatementNotFoundException.class, () ->
-                statementService.getStatement(statementId));
+                statementService.setStatementLoanOffer(invalidOffer));
     }
 }

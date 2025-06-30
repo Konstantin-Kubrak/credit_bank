@@ -23,7 +23,7 @@ public class EmploymentDto {
     @Schema(description = "ИНН работодателя",
             required = true,
             example = "1234567890")
-    private String employerINN;
+    private String employerInn;
 
     @NotNull(message = "Salary cannot be null")
     @Schema(description = "Employee salary",

@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.neoflex.kubrak.deal.dto.FinishRegistrationRequestDto;
-import ru.neoflex.kubrak.deal.exception.CreditRequestFailedException;
-import ru.neoflex.kubrak.deal.exception.StatementNotFoundException;
-import ru.neoflex.kubrak.deal.service.CreditService;
+import ru.neoflex.kubrak.deal.service.DealService;
 
 import java.util.UUID;
 
@@ -22,7 +20,7 @@ import java.util.UUID;
 @RequestMapping("/deal")
 public class CreditController {
 
-    private final CreditService creditService;
+    private final DealService dealService;
 
     @Operation(summary = "Calculate credit terms", responses = {
             @ApiResponse(responseCode = "201", description = "Credit calculated successfully"),
@@ -35,14 +33,9 @@ public class CreditController {
                                        @Valid @RequestBody FinishRegistrationRequestDto frrDto) {
 
         log.info("Received credit creation request for statementId: {}", statementId);
-        try {
-            creditService.finishCreditRegistration(statementId, frrDto);
-            log.info("Credit creation completed for statementId: {}", statementId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (StatementNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (CreditRequestFailedException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        dealService.finishCreditRegistration(statementId, frrDto);
+        log.info("Credit creation completed for statementId: {}", statementId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
     }
 }

@@ -18,7 +18,7 @@ import ru.neoflex.kubrak.deal.dto.LoanOfferDto;
 import ru.neoflex.kubrak.deal.dto.LoanStatementRequestDto;
 import ru.neoflex.kubrak.deal.exception.CalculatorServiceException;
 import ru.neoflex.kubrak.deal.exception.StatementNotFoundException;
-import ru.neoflex.kubrak.deal.service.OfferService;
+import ru.neoflex.kubrak.deal.service.DealService;
 import ru.neoflex.kubrak.deal.service.StatementService;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
 public class StatementController {
 
     private final StatementService statementService;
-    private final OfferService offerService;
+    private final DealService dealService;
 
     @Operation(summary = "Create loan statement and get offers", responses = {
             @ApiResponse(
@@ -47,7 +47,7 @@ public class StatementController {
         log.info("Received new loan statement request for client: {}",
                 requestDto.getEmail());
         try {
-            List<LoanOfferDto> loanOfferDtoList = offerService.getLoanOfferList(requestDto);
+            List<LoanOfferDto> loanOfferDtoList = dealService.getLoanOfferList(requestDto);
             log.info("Successfully generated {} loan offers for client: {}",
                     loanOfferDtoList.size(), requestDto.getEmail());
 
@@ -71,12 +71,14 @@ public class StatementController {
 
         log.info("Processing offer selection for statementId: {}.Offer details: rate={}, amount={}",
                 loanOfferDto.getStatementId(), loanOfferDto.getRate(), loanOfferDto.getRequestedAmount());
+
         try {
             statementService.setStatementLoanOffer(loanOfferDto);
             log.info("Loan offer successfully selected for statementId: {}", loanOfferDto.getStatementId());
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (StatementNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (StatementNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }
