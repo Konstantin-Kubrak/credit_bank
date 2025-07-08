@@ -1,0 +1,17 @@
+services:
+
+  postgres-base:
+    image: postgres:13
+    container_name: some_postgres_base
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: deal_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+#    volumes:
+#        - ./queries/create_extensions.sql:/docker-entrypoint-initdb.d/create_extensions.sql:ro
+
+
+
+

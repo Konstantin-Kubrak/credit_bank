@@ -1,6 +1,6 @@
 package ru.neoflex.kubrak.calculator.model.enums;
 
-public enum Position {
+public enum EmploymentPosition {
 
     UNEMPLOYED,
     WORKER,

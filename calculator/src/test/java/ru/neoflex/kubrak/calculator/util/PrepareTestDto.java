@@ -4,7 +4,7 @@ import ru.neoflex.kubrak.calculator.dto.*;
 import ru.neoflex.kubrak.calculator.model.enums.EmploymentStatus;
 import ru.neoflex.kubrak.calculator.model.enums.Gender;
 import ru.neoflex.kubrak.calculator.model.enums.MaritalStatus;
-import ru.neoflex.kubrak.calculator.model.enums.Position;
+import ru.neoflex.kubrak.calculator.model.enums.EmploymentPosition;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -54,7 +54,7 @@ public class PrepareTestDto {
                 .setEmploymentStatus(EmploymentStatus.EMPLOYED)
                 .setEmployerINN("123456789012")
                 .setSalary(BigDecimal.valueOf(50000))
-                .setPosition(Position.MANAGER)
+                .setEmploymentPosition(EmploymentPosition.MANAGER)
                 .setWorkExperienceTotal(60)
                 .setWorkExperienceCurrent(24);
     }

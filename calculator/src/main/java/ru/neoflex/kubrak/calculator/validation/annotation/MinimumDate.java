@@ -17,4 +17,3 @@ public @interface MinimumDate {
 
     String value() default "1997-10-01";
 }
-

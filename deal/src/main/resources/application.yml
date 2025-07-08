@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: deal
+  profiles:
+    active: prod
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/deal_db
+    username: admin
+    password: admin
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+calculator:
+  service:
+    base-url: http://calculator
+    calc-credit-url: /calculator/calc
+    calc-offers-url: /calculator/offers
+
+logging:
+  level:
+    root: info
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %logger{36} - %msg%n"

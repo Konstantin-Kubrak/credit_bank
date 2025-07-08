@@ -148,6 +148,7 @@ class LoanStatementRequestDtoTest {
     }
 
     private void assertSingleViolation(LoanStatementRequestDto dto, String expectedMessage) {
+
         Set<ConstraintViolation<LoanStatementRequestDto>> violations = validator.validate(dto);
         assertEquals(1, violations.size());
         assertEquals(expectedMessage, violations.iterator().next().getMessage());

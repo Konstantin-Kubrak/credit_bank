@@ -67,7 +67,7 @@ class EmployeeDtoTest {
     @Test
     void whenPositionNull_thenValidationFails() {
 
-        dto.setPosition(null);
+        dto.setEmploymentPosition(null);
         assertSingleViolation(dto, "Job position cannot be null");
     }
 
