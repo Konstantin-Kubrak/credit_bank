@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: statement
+
+deal:
+  service:
+    base-url: http://deal
+    get-loan-offers-url: /deal/statement
+    select-offer-url: /deal/offer/select
+
+validation:
+  credit-data:
+    amount:
+      min: 20000
+    age:
+      min: 18
+    name:
+      length:
+        min: 2
+        max: 30
+    term:
+      min: 6
+      max: 60
+    pattern:
+      name: "^[a-zA-Z?-??-?]{2,30}$"
+      passport:
+        series: "^[0-9]{4}$"
+        number: "^[0-9]{6}$"
+      email: "^[a-z0-9A-Z_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9A-Z.-]+$"
