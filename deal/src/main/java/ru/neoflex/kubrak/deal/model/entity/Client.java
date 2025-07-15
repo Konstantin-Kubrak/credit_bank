@@ -3,12 +3,12 @@ package ru.neoflex.kubrak.deal.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import ru.neoflex.kubrak.deal.model.enums.Gender;
 import ru.neoflex.kubrak.deal.model.enums.MaritalStatus;
 import ru.neoflex.kubrak.deal.model.jsonb.Employment;
 import ru.neoflex.kubrak.deal.model.jsonb.Passport;
-import ru.neoflex.kubrak.deal.model.jsonb.converter.EmploymentConverter;
-import ru.neoflex.kubrak.deal.model.jsonb.converter.PassportConverter;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -53,11 +53,11 @@ public class Client {
     @Column(name = "dependent_amount")
     private Integer dependentAmount;
 
-    @Convert(converter = PassportConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "passport", columnDefinition = "jsonb")
     private Passport passport;
 
-    @Convert(converter = EmploymentConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "employment", columnDefinition = "jsonb")
     private Employment employment;
 

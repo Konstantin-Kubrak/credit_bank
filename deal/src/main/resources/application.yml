@@ -4,6 +4,14 @@ spring:
   profiles:
     active: prod
 
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.xml
+    user: admin
+    password: admin
+    url: jdbc:postgresql://localhost:5433/deal_db
+    default-schema: public
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5433/deal_db
@@ -11,7 +19,7 @@ spring:
     password: admin
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
 calculator:
   service:

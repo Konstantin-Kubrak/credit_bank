@@ -31,9 +31,8 @@ public class StatementService {
         log.info("Setting loan offer for statement ID: {}", loanOfferDto.getStatementId());
         log.debug("Offer details: {}", loanOfferDto);
 
-        Statement statement = statementRepository
-                .findById(loanOfferDto.getStatementId())
-                .orElseThrow(()-> new StatementNotFoundException(loanOfferDto.getStatementId()));
+        Statement statement = statementRepository.findByStatementId(loanOfferDto.getStatementId())
+                .orElseThrow(() -> new StatementNotFoundException(loanOfferDto.getStatementId()));
         log.debug("Retrieved statement: {}", statement);
 
         statement.setStatus(ApplicationStatus.APPROVED);
@@ -75,5 +74,4 @@ public class StatementService {
 
         statementRepository.save(statement);
     }
-
 }

@@ -3,11 +3,11 @@ package ru.neoflex.kubrak.deal.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import ru.neoflex.kubrak.deal.model.enums.ApplicationStatus;
 import ru.neoflex.kubrak.deal.model.jsonb.LoanOffer;
 import ru.neoflex.kubrak.deal.model.jsonb.StatusHistory;
-import ru.neoflex.kubrak.deal.model.jsonb.converter.LoanOfferConverter;
-import ru.neoflex.kubrak.deal.model.jsonb.converter.StatusHistoryConverter;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ public class Statement {
 
     @Id
     @Column(name = "statement_id", nullable = false, updatable = false)
-    @NotNull
     private UUID statementId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -41,11 +40,11 @@ public class Statement {
     @NotNull
     private ApplicationStatus status;
 
-    @Column(name = "creation_date", nullable = false)
     @NotNull
+    @Column(name = "creation_date", nullable = false)
     private Timestamp creationDate;
 
-    @Convert(converter = LoanOfferConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "applied_offer", columnDefinition = "jsonb")
     private LoanOffer appliedOffer;
 
@@ -55,9 +54,9 @@ public class Statement {
     @Column(name = "ses_code")
     private String sesCode;
 
-    @Convert(converter = StatusHistoryConverter.class)
-    @Column(name = "status_history", columnDefinition = "jsonb")
     @Builder.Default
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "status_history", columnDefinition = "jsonb")
     private List<StatusHistory> statusHistory = new ArrayList<>();
 
     public void addStatusHistory(StatusHistory history) {

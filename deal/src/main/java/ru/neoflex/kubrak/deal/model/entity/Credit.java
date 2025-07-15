@@ -2,9 +2,10 @@ package ru.neoflex.kubrak.deal.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import ru.neoflex.kubrak.deal.model.enums.CreditStatus;
 import ru.neoflex.kubrak.deal.model.jsonb.PaymentScheduleElement;
-import ru.neoflex.kubrak.deal.model.jsonb.converter.PaymentScheduleConverter;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import java.util.UUID;
 public class Credit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "credit_id")
     private UUID creditId;
 
@@ -40,8 +40,8 @@ public class Credit {
     @Column(name = "psk", nullable = false, precision = 19, scale = 4)
     private BigDecimal psk;
 
-    @Convert(converter = PaymentScheduleConverter.class)
-    @Column(name = "payment_schedule")
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "payment_schedule", columnDefinition = "jsonb")
     @Builder.Default
     private List<PaymentScheduleElement> paymentSchedule = new ArrayList<>();
 

@@ -65,8 +65,7 @@ class StatementServiceTest {
                 .isInsuranceEnabled(loanOfferDto.getIsInsuranceEnabled())
                 .isSalaryClient(loanOfferDto.getIsSalaryClient())
                 .build();
-
-        when(statementRepository.findById(statementId)).thenReturn(Optional.of(existingStatement));
+        when(statementRepository.findByStatementId(statementId)).thenReturn(Optional.of(existingStatement));
         when(loanOfferMapper.toEntity(loanOfferDto)).thenReturn(mappedOffer);
 
         statementService.setStatementLoanOffer(loanOfferDto);
@@ -132,7 +131,7 @@ class StatementServiceTest {
         UUID invalidId = UUID.randomUUID();
         LoanOfferDto invalidOffer = new LoanOfferDto().setStatementId(invalidId);
 
-        when(statementRepository.findById(invalidId))
+        when(statementRepository.findByStatementId(invalidId))
                 .thenReturn(Optional.empty());
 
         assertThrows(StatementNotFoundException.class, () ->

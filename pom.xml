@@ -25,6 +25,10 @@
         <lombok.version>1.18.38</lombok.version>
         <springfox.version>3.0.0</springfox.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <liquibase.version>4.20.0</liquibase.version>
+        <springboot.testcontainers.version>3.4.7</springboot.testcontainers.version>
+        <testcontainers.junit.version>1.19.7</testcontainers.junit.version>
+        <testcontainers.postgresql.version>1.19.7</testcontainers.postgresql.version>
     </properties>
 
     <dependencyManagement>
@@ -50,6 +54,34 @@
                 <version>${mapstruct.version}</version> <!-- Must match mapstruct version -->
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>com.vladmihalcea</groupId>
+                <artifactId>hibernate-types-52</artifactId>
+                <version>2.14.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-testcontainers</artifactId>
+                <version>${springboot.testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${testcontainers.junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${testcontainers.postgresql.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -63,16 +95,5 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <repositories>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-    </repositories>
 
 </project>
