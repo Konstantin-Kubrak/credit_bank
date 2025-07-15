@@ -75,23 +75,23 @@ public class ValidationService {
     protected void validateAmount(BigDecimal amount, double minAmount) {
         validateNotNull(amount, "Amount");
         if (amount.compareTo(BigDecimal.valueOf(minAmount)) < 0) {
-            throw new PreScoringException("Amount must be at least " + minAmount);
+            throw new PreScoringException(String.format("Amount must be at least %s", minAmount));
         }
     }
 
     protected void validateTerm(int term, int minTerm, int maxTerm) {
         if (term < minTerm || term > maxTerm) {
-            throw new PreScoringException("Term must be between " + minTerm + " and " + maxTerm + " months");
+            throw new PreScoringException(String.format("Term must be between %s and %s months", minTerm, maxTerm));
         }
     }
 
     protected void validateName(String name, String fieldName, int minLength, int maxLength) {
         validateNotBlank(name, fieldName);
         if (!Pattern.compile(name_pattern).matcher(name).matches()) {
-            throw new PreScoringException(fieldName + " must contain only letters");
+            throw new PreScoringException(String.format("%s must contain only letters", fieldName));
         }
         if (name.length() < minLength || name.length() > maxLength) {
-            throw new PreScoringException(fieldName + " length must be between " + minLength + " and " + maxLength + " characters");
+            throw new PreScoringException(String.format("%s length must be between %s and %s characters", fieldName, minLength, maxLength));
         }
     }
 
@@ -107,7 +107,7 @@ public class ValidationService {
         LocalDate now = LocalDate.now();
         Period period = Period.between(birthdate, now);
         if (period.getYears() < minAge) {
-            throw new PreScoringException("Age must be at least " + minAge + " years old");
+            throw new PreScoringException(String.format("Age must be at least %s years old", minAge));
         }
     }
 
@@ -128,26 +128,26 @@ public class ValidationService {
     protected void validatePositiveDecimal(BigDecimal value, String fieldName) {
         validateNotNull(value, fieldName);
         if (value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException(fieldName + " must be greater than 0");
+            throw new IllegalArgumentException(String.format("%s must be greater than 0", fieldName));
         }
     }
 
     protected void validatePositiveNumber(Number value, String fieldName) {
         validateNotNull(value, fieldName);
         if (value.doubleValue() <= 0) {
-            throw new IllegalArgumentException(fieldName + " must be greater than 0");
+            throw new IllegalArgumentException(String.format("%s must be greater than 0", fieldName));
         }
     }
 
     protected void validateNotNull(Object value, String fieldName) {
         if (value == null) {
-            throw new ValidationException(fieldName + " cannot be null");
+            throw new ValidationException(String.format("%s cannot be null", fieldName));
         }
     }
 
     protected void validateNotBlank(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
-            throw new ValidationException(fieldName + " cannot be blank");
+            throw new ValidationException(String.format("%s cannot be blank", fieldName));
         }
     }
 }
