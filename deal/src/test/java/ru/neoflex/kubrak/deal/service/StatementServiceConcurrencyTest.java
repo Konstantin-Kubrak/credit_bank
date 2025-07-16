@@ -1,15 +1,10 @@
 package ru.neoflex.kubrak.deal.service;
 
-import liquibase.integration.spring.SpringLiquibase;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.neoflex.kubrak.deal.dto.LoanOfferDto;
 import ru.neoflex.kubrak.deal.dto.dtoMapper.LoanOfferMapper;
 import ru.neoflex.kubrak.deal.model.entity.Statement;
@@ -20,56 +15,32 @@ import ru.neoflex.kubrak.deal.repository.StatementRepository;
 import ru.neoflex.kubrak.deal.testcontainer.AbstractPostgresBase;
 import ru.neoflex.kubrak.deal.util.EntityFactory;
 
-import javax.sql.DataSource;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest
-@ActiveProfiles("test")
-@Testcontainers
 class StatementServiceConcurrencyTest extends AbstractPostgresBase {
 
     @Autowired
-    LoanOfferMapper loanOfferMapper;
+    private TransactionTemplate transactionTemplate;
 
     @Autowired
-    private DataSource dataSource;
-
+    LoanOfferMapper loanOfferMapper;
     @Autowired
     private StatementService statementService;
 
     @Autowired
     private StatementRepository statementRepository;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
     @Autowired
     private ClientRepository clientRepository;
     @Autowired
     private CreditRepository creditRepository;
-
-    @BeforeAll
-    static void init() throws Exception {
-        sleep(2000);
-    }
-
-    @BeforeEach
-    void setUp() throws Exception {
-
-        SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setDataSource(dataSource);
-        liquibase.setChangeLog("classpath:/db/changelog/changelog-master.xml");
-        liquibase.setShouldRun(true);
-        liquibase.afterPropertiesSet();
-    }
-
 
     @Test
     void setStatementLoanOffer_shouldBlockConcurrentAccess() throws InterruptedException{

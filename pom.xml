@@ -25,10 +25,9 @@
         <lombok.version>1.18.38</lombok.version>
         <springfox.version>3.0.0</springfox.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <liquibase.version>4.20.0</liquibase.version>
-        <springboot.testcontainers.version>3.4.7</springboot.testcontainers.version>
-        <testcontainers.junit.version>1.19.7</testcontainers.junit.version>
-        <testcontainers.postgresql.version>1.19.7</testcontainers.postgresql.version>
+        <liquibase.version>4.24.0</liquibase.version>
+        <testcontainers.junit.version>1.19.6</testcontainers.junit.version>
+        <testcontainers.postgresql.version>1.19.6</testcontainers.postgresql.version>
     </properties>
 
     <dependencyManagement>
@@ -51,7 +50,7 @@
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct-processor</artifactId>
-                <version>${mapstruct.version}</version> <!-- Must match mapstruct version -->
+                <version>${mapstruct.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
