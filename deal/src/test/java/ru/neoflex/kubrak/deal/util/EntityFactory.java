@@ -12,9 +12,7 @@ import ru.neoflex.kubrak.deal.model.jsonb.Employment;
 import ru.neoflex.kubrak.deal.model.jsonb.Passport;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -78,10 +76,10 @@ public class EntityFactory {
 
         return Statement.builder()
                 .statementId(statementId)
-                .creationDate(Timestamp.valueOf(LocalDateTime.now()))
+                .creationDate(LocalDate.now())
                 .client(client)
                 .credit(credit)
-                .creationDate(new Timestamp(System.currentTimeMillis()))
+                .creationDate(LocalDate.now())
                 .status(ApplicationStatus.PREAPPROVAL)
                 .build();
     }
@@ -151,6 +149,4 @@ public class EntityFactory {
                 .salaryClient(false)
                 .build();
     }
-
-
 }

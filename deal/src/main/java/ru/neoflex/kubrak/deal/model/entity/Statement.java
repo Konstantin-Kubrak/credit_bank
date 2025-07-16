@@ -9,7 +9,7 @@ import ru.neoflex.kubrak.deal.model.enums.ApplicationStatus;
 import ru.neoflex.kubrak.deal.model.jsonb.LoanOffer;
 import ru.neoflex.kubrak.deal.model.jsonb.StatusHistory;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,15 +41,15 @@ public class Statement {
     private ApplicationStatus status;
 
     @NotNull
-    @Column(name = "creation_date", nullable = false)
-    private Timestamp creationDate;
+    @Column(name = "creation_date", nullable = false, columnDefinition = "timestamp")
+    private LocalDate creationDate;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "applied_offer", columnDefinition = "jsonb")
     private LoanOffer appliedOffer;
 
-    @Column(name = "sign_date")
-    private Timestamp signDate;
+    @Column(name = "sign_date", columnDefinition = "timestamp")
+    private LocalDate signDate;
 
     @Column(name = "ses_code")
     private String sesCode;

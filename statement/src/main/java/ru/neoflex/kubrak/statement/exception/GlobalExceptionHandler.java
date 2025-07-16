@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PreScoringException.class)
     public ResponseEntity<?> handlePreScoringException(PreScoringException ex) {
 
+        log.error("PreScoring error: ", ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 

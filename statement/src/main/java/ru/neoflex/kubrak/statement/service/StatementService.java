@@ -1,6 +1,6 @@
 package ru.neoflex.kubrak.statement.service;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.neoflex.kubrak.statement.client.DealClient;
@@ -11,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class StatementService {
 
     private final ValidationService validationService;
@@ -23,7 +23,6 @@ public class StatementService {
 
         log.debug("Performing pre-scoring validation...");
         validationService.preScoring(lsrDto);
-        log.debug("Pre-scoring validation passed successfully");
 
         log.debug("Sending request to Deal service for offers calculation...");
         List<LoanOfferDto> offers = dealClient.getOffers(lsrDto);
@@ -48,11 +47,9 @@ public class StatementService {
     public void selectOffer(LoanOfferDto loanOfferDto) {
         log.info("Starting offer selection process for statement ID: {}",
                 loanOfferDto.getStatementId());
-        log.debug("Incoming LoanOfferDto details: {}", loanOfferDto);
 
         log.debug("Validating selected offer...");
         validationService.validateLoanOffer(loanOfferDto);
-        log.debug("Offer validation passed successfully");
 
         log.debug("Sending selected offer to Deal service...");
         dealClient.selectOfferUrl(loanOfferDto);
