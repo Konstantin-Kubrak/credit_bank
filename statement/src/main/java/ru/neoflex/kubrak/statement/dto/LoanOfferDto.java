@@ -1,20 +1,16 @@
-package ru.neoflex.kubrak.deal.model.jsonb;
+package ru.neoflex.kubrak.statement.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Accessors(chain = true)
 @Schema(description = "Loan offer")
-public class LoanOffer{
+public class LoanOfferDto {
 
     private UUID statementId;
     private BigDecimal requestedAmount;

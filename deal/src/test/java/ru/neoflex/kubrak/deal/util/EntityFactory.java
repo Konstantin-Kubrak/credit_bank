@@ -5,6 +5,7 @@ import ru.neoflex.kubrak.deal.model.entity.Client;
 import ru.neoflex.kubrak.deal.model.entity.Credit;
 import ru.neoflex.kubrak.deal.model.entity.Statement;
 import ru.neoflex.kubrak.deal.model.enums.ApplicationStatus;
+import ru.neoflex.kubrak.deal.model.enums.CreditStatus;
 import ru.neoflex.kubrak.deal.model.enums.Gender;
 import ru.neoflex.kubrak.deal.model.enums.MaritalStatus;
 import ru.neoflex.kubrak.deal.model.jsonb.Employment;
@@ -13,10 +14,12 @@ import ru.neoflex.kubrak.deal.model.jsonb.Passport;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class EntityFactory {
-    
+
+
     public static List<LoanOfferDto> createExpectedOffers() {
         return List.of(
                 new LoanOfferDto()
@@ -73,14 +76,17 @@ public class EntityFactory {
 
         return Statement.builder()
                 .statementId(statementId)
+                .creationDate(LocalDate.now())
                 .client(client)
                 .credit(credit)
+                .creationDate(LocalDate.now())
                 .status(ApplicationStatus.PREAPPROVAL)
                 .build();
     }
 
     public static Client createTestClient() {
 
+        Random random = new Random();
         return Client.builder()
                 .clientId(UUID.randomUUID())
                 .firstName("Ivan")
@@ -90,13 +96,16 @@ public class EntityFactory {
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .maritalStatus(MaritalStatus.MARRIED)
                 .dependentAmount(2)
+                .email(UUID.randomUUID().toString().substring(0,6) + "@test.com")
                 .passport(new Passport()
                         .setSeries("1234")
                         .setNumber("567890")
                         .setIssueDate(LocalDate.now())
                         .setIssueBranch("UFMS-123"))
                 .employment(Employment.builder().build())
-                .accountNumber("1234567890")
+                .accountNumber(String.format("%d%09d",
+                                1 + random.nextInt(9),
+                                random.nextInt(1_000_000_000)))
                 .build();
     }
 
@@ -132,7 +141,11 @@ public class EntityFactory {
                 .creditId(UUID.randomUUID())
                 .amount(BigDecimal.valueOf(100000))
                 .term(12)
+                .psk(BigDecimal.valueOf(5))
+                .rate(BigDecimal.valueOf(10))
+                .monthlyPayment(BigDecimal.valueOf(10000))
                 .insuranceEnabled(true)
+                .creditStatus(CreditStatus.CALCULATED)
                 .salaryClient(false)
                 .build();
     }

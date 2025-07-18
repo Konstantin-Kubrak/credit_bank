@@ -15,6 +15,7 @@ import ru.neoflex.kubrak.deal.model.jsonb.StatusHistory;
 import ru.neoflex.kubrak.deal.repository.StatementRepository;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Slf4j
@@ -31,9 +32,8 @@ public class StatementService {
         log.info("Setting loan offer for statement ID: {}", loanOfferDto.getStatementId());
         log.debug("Offer details: {}", loanOfferDto);
 
-        Statement statement = statementRepository
-                .findById(loanOfferDto.getStatementId())
-                .orElseThrow(()-> new StatementNotFoundException(loanOfferDto.getStatementId()));
+        Statement statement = statementRepository.findByStatementId(loanOfferDto.getStatementId())
+                .orElseThrow(() -> new StatementNotFoundException(loanOfferDto.getStatementId()));
         log.debug("Retrieved statement: {}", statement);
 
         statement.setStatus(ApplicationStatus.APPROVED);
@@ -52,7 +52,7 @@ public class StatementService {
                 .statementId(UUID.randomUUID())
                 .client(client)
                 .status(ApplicationStatus.PREAPPROVAL)
-                .creationDate(new Timestamp(System.currentTimeMillis()))
+                .creationDate(LocalDate.now())
                 .build();
         log.debug("Statement created: {}", statement);
         return statement;
@@ -75,5 +75,4 @@ public class StatementService {
 
         statementRepository.save(statement);
     }
-
 }

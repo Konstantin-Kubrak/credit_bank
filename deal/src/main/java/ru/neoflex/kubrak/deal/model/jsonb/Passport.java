@@ -1,5 +1,7 @@
 package ru.neoflex.kubrak.deal.model.jsonb;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -12,5 +14,7 @@ public class Passport {
     private String series;
     private String number;
     private String issueBranch;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate issueDate;
 }
