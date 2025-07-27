@@ -35,7 +35,8 @@ class StatementServiceTest {
 
     @InjectMocks
     private StatementService statementService;
-
+    @Mock
+    DossierService dossierService;
     @Test
     void setStatementLoanOffer_ShouldUpdateStatementSuccessfully() throws StatementNotFoundException {
 

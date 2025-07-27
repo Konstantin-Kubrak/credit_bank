@@ -25,6 +25,7 @@ public class StatementService {
 
     private final StatementRepository statementRepository;
     private final LoanOfferMapper loanOfferMapper;
+    private final DossierService dossierService;
 
     @Transactional
     public void setStatementLoanOffer(LoanOfferDto loanOfferDto){
@@ -41,6 +42,9 @@ public class StatementService {
         statement.addStatusHistory(statusHistory);
         statement.setAppliedOffer(loanOfferMapper.toEntity(loanOfferDto));
         statementRepository.save(statement);
+
+        dossierService.sendKafkaFinishRegistration(statement.getStatementId());
+
         log.info("Loan offer successfully set for statement ID: {}", statement.getStatementId());
     }
 

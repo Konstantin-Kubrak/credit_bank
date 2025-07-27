@@ -39,6 +39,7 @@ public class DealService {
     private final CalculatorClient calculatorClient;
     private final ClientRepository clientRepository;
     private final StatementRepository statementRepository;
+    private final DossierService dossierService;
 
     public List<LoanOfferDto> getLoanOfferList(LoanStatementRequestDto loanStatementRequestDto) {
 
@@ -105,6 +106,7 @@ public class DealService {
 
         statement.setCredit(credit);
         statementService.updateStatement(statement, ApplicationStatus.CC_APPROVED, ChangeType.AUTOMATIC);
+        dossierService.sendKafkaCreateDocuments(statement.getStatementId());
         log.info("Successfully finished credit registration for statement ID: {}", statementId);
     }
 
@@ -133,5 +135,43 @@ public class DealService {
                 .setAccountNumber(client.getAccountNumber())
                 .setIsInsuranceEnabled(credit.getInsuranceEnabled())
                 .setIsSalaryClient(credit.getSalaryClient());
+    }
+
+    public void createDocuments(UUID statementId) {
+
+        log.info("Starting document creation process for statement: {}", statementId);
+
+        Statement statement = statementRepository.findById(statementId)
+                .orElseThrow(() -> new StatementNotFoundException(statementId));
+        log.debug("Retrieved statement for document creation: {}", statement);
+
+        statement.setStatus(ApplicationStatus.PREPARE_DOCUMENTS);
+        statementRepository.save(statement);
+        log.debug("Updated statement status to PREPARE_DOCUMENTS");
+
+        dossierService.sendKafkaSendDocuments(statement.getStatementId());
+
+        statement.setStatus(ApplicationStatus.DOCUMENTS_CREATED);
+        statementRepository.save(statement);
+        log.info("Successfully completed document creation for statement: {}", statementId);
+    }
+
+    public void signDocuments(UUID statementId) {
+
+        log.info("Starting document signing process for statement: {}", statementId);
+        Statement statement = statementRepository.findById(statementId)
+                .orElseThrow(() -> new StatementNotFoundException(statementId));
+        log.debug("Retrieved statement for signing: {}", statement);
+
+        statement.setStatus(ApplicationStatus.DOCUMENTS_SIGNED);
+        statementRepository.save(statement);
+        log.debug("Updated statement status to DOCUMENTS_SIGNED");
+
+        statement.setStatus(ApplicationStatus.CREDIT_ISSUED);
+        statementRepository.save(statement);
+        log.debug("Updated statement status to CREDIT_ISSUED");
+
+        dossierService.sendKafkaCreditIssued(statement.getStatementId());
+        log.info("Successfully completed document signing for statement: {}", statementId);
     }
 }

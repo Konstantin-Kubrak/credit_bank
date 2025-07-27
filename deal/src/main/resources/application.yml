@@ -17,11 +17,30 @@ spring:
     hibernate:
       ddl-auto: validate
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer:  org.apache.kafka.common.serialization.StringDeserializer
+      value-serializer: ru.neoflex.kubrak.dossier.dto.EmailMessageDto.class
+      properties:
+        spring.json.value.default.type: ru.neoflex.kubrak.dossier.dto.EmailMessageDto
+
 calculator:
   service:
     base-url: http://calculator
     calc-credit-url: /calculator/calc
     calc-offers-url: /calculator/offers
+
+
+deal:
+  kafka:
+    topic:
+      finish-registration: finish-registration
+      create-documents: create-documents
+      send-documents: send-documents
+      send-ses: send-ses
+      credit-issued: credit-issued
+      statement-denied:  statement-denied
 
 logging:
   level:
