@@ -13,9 +13,23 @@ spring:
 
     mail:
         host: smtp.neoflex.ru
-        port: 587
-        username: login
-        password: password
+        port: 465
+        username: konstantin.kubrak@neoflex.ru
+        password: супер-секретный-пароль
+        protocol: smtps
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                    ssl:
+                        enable: true
+                    socketFactory:
+                        class: javax.net.ssl.SSLSocketFactory
+                        port: 465
+                        fallback: false
+
 
 dossier:
     kafka:
@@ -26,4 +40,6 @@ dossier:
             send-ses: send-ses
             credit-issued: credit-issued
             statement-denied:  statement-denied
+    email:
+        sender: konstantin.kubrak@yandex.ru
 

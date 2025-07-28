@@ -2,6 +2,7 @@ package ru.neoflex.kubrak.dossier.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,14 @@ import ru.neoflex.kubrak.dossier.exception.EmailException;
 @RequiredArgsConstructor
 public class DossierService {
 
+    @Value("${dossier.email.sender}")
+    private String emailSender;
     private final JavaMailSender mailSender;
 
     public void sendEmail(EmailMessageDto message, String defaultText) {
         log.debug("Preparing email for: {}", message.getEmail());
         SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom(emailSender);
         mailMessage.setTo(message.getEmail());
         mailMessage.setSubject(message.getTheme().toString());
         mailMessage.setText(message.getText() != null ? message.getText() : defaultText);
