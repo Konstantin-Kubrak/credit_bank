@@ -19,6 +19,7 @@ import ru.neoflex.kubrak.deal.dto.LoanStatementRequestDto;
 import ru.neoflex.kubrak.deal.exception.CalculatorServiceException;
 import ru.neoflex.kubrak.deal.exception.StatementNotFoundException;
 import ru.neoflex.kubrak.deal.service.DealService;
+import ru.neoflex.kubrak.deal.service.DossierService;
 import ru.neoflex.kubrak.deal.service.StatementService;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class StatementController {
 
     private final StatementService statementService;
     private final DealService dealService;
+    private final DossierService dossierService;
 
     @Operation(summary = "Create loan statement and get offers", responses = {
             @ApiResponse(

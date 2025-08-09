@@ -1,0 +1,23 @@
+spring:
+    kafka:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        consumer:
+            group-id: test-group
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            auto-offset-reset: earliest
+            properties:
+                spring.json.value.default.type: ru.neoflex.kubrak.dossier.dto.EmailMessageDto
+                spring.json.trusted.packages: "*"
+dossier:
+    kafka:
+        topic:
+            finish-registration: finish-registration
+            create-documents: create-documents
+            send-documents: send-documents
+            send-ses: send-ses
+            credit-issued: credit-issued
+            statement-denied: statement-denied

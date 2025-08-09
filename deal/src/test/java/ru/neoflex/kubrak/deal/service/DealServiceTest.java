@@ -40,6 +40,8 @@ class DealServiceTest {
     private StatementService statementService;
 
     @Mock
+    DossierService dossierService;
+    @Mock
     private ClientRepository clientRepository;
     @Mock
     private StatementRepository statementRepository;
