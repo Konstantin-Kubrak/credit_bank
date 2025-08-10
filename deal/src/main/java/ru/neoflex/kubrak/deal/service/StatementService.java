@@ -16,18 +16,19 @@ import ru.neoflex.kubrak.deal.repository.StatementRepository;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class StatementService {
 
     private final StatementRepository statementRepository;
     private final LoanOfferMapper loanOfferMapper;
     private final DossierService dossierService;
 
-    @Transactional
     public void setStatementLoanOffer(LoanOfferDto loanOfferDto){
 
         log.info("Setting loan offer for statement ID: {}", loanOfferDto.getStatementId());
@@ -70,6 +71,21 @@ public class StatementService {
                 .changeType(changeType)
                 .build();
     }
+
+    public Statement getStatement(UUID statementId) {
+
+        log.debug("Looking for statement with ID: {}", statementId);
+        return statementRepository.findByStatementId(statementId)
+                .orElseThrow(() -> new StatementNotFoundException(statementId));
+    }
+
+    public List<Statement> getAllStatement() {
+
+        log.debug("Retrieving all statements");
+        return statementRepository.findAll();
+    }
+
+
 
     public void updateStatement(Statement statement, ApplicationStatus applicationStatus, ChangeType changeType) {
 

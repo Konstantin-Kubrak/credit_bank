@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.support.TransactionTemplate;
 import ru.neoflex.kubrak.deal.dto.LoanOfferDto;
 import ru.neoflex.kubrak.deal.dto.dtoMapper.LoanOfferMapper;
@@ -22,9 +23,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 @Slf4j
-@SpringBootTest
+@SpringBootTest(
+        properties = {
+                "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration"
+        })
 class StatementServiceConcurrencyTest extends AbstractPostgresBase {
 
     @Autowired
@@ -34,7 +40,8 @@ class StatementServiceConcurrencyTest extends AbstractPostgresBase {
     LoanOfferMapper loanOfferMapper;
     @Autowired
     private StatementService statementService;
-
+    @MockitoBean
+    private DossierService dossierService;
     @Autowired
     private StatementRepository statementRepository;
     @Autowired
@@ -45,6 +52,7 @@ class StatementServiceConcurrencyTest extends AbstractPostgresBase {
     @Test
     void setStatementLoanOffer_shouldBlockConcurrentAccess() throws InterruptedException{
 
+        doNothing().when(dossierService).sendKafkaCreditIssued(any(UUID.class));
         Statement statement = EntityFactory.createTestStatement(UUID.randomUUID());
         clientRepository.saveAndFlush(statement.getClient());
         creditRepository.saveAndFlush(statement.getCredit());
