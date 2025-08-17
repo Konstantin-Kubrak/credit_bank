@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.7-SNAPSHOT</version>
+        <version>3.4.8</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.neoflex.kubrak</groupId>
@@ -15,10 +15,11 @@
     <name>credit_bank</name>
 
     <modules>
-        <module>deal</module>
         <module>calculator</module>
+        <module>deal</module>
         <module>statement</module>
         <module>dossier</module>
+        <module>gateway</module>
     </modules>
 
     <properties>
@@ -31,6 +32,28 @@
         <liquibase.version>4.24.0</liquibase.version>
         <testcontainers.junit.version>1.19.6</testcontainers.junit.version>
         <testcontainers.postgresql.version>1.19.6</testcontainers.postgresql.version>
+        <jacoco.version>0.8.10</jacoco.version>
+
+        <sonar.organization>konstantin-kubrak</sonar.organization>
+        <sonar.skip>true</sonar.skip>
+        <sonar.coverage.exclusions>
+            **/model/**,
+            **/dto/**,
+            **/config/**
+        </sonar.coverage.exclusions>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>Konstantin-Kubrak_credit_bank</sonar.projectKey>
+        <sonar.projectName>credit_bank</sonar.projectName>
+        <sonar.language>java</sonar.language>
+        <sonar.java.binaries>${project.basedir}/target/classes</sonar.java.binaries>
+        <sonar.java.test.binaries>${project.basedir}/target/test-classes</sonar.java.test.binaries>
+        <sonar.sources>src/main/java</sonar.sources>
+        <sonar.tests>src/test/java</sonar.tests>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/**/target/site/jacoco/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     </properties>
 
     <dependencyManagement>
@@ -111,8 +134,59 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                 </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>merge</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>merge</goal>
+                            </goals>
+                            <configuration>
+                                <fileSets>
+                                    <fileSet>
+                                        <directory>${project.basedir}</directory>
+                                        <includes>
+                                            <include>**/target/jacoco.exec</include>
+                                        </includes>
+                                    </fileSet>
+                                </fileSets>
+                                <destFile>${project.basedir}/target/jacoco.exec</destFile>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>report-aggregate</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>report-aggregate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
 </project>
